@@ -416,59 +416,7 @@ if (document.getElementById('fieldList')) {
 
 ---
 
-🎯 Where Exactly to Paste It
-
-Your file should end like this before the paste:
-
-```javascript
-function isBookmarked(id) {
-  return getBookmarks().includes(id);
-}
-                                                    ← cursor here, end of file
-```
-
-After the paste, it should end like this:
-
-```javascript
-function isBookmarked(id) {
-  return getBookmarks().includes(id);
-}
-
-// ═══════════════════════════════════════════
-//           HOMEPAGE RENDER (only on index.html)
-// ═══════════════════════════════════════════
-if (document.getElementById('fieldList')) {
-  ...
-  renderFields();
-}                                                   ← new end of file
-```
-
----
-
-📋 Full Step-by-Step
-
-1. Open script.js in your Apex repo (pencil ✏️)
-2. Scroll to the very bottom
-3. Place your cursor after }
-4. Press Enter twice
-5. Paste the block above
-6. Scroll down → Commit changes
-7. Wait 1 minute → refresh serkjune-maker.github.io/Apex
-
-Your cards will appear! ✅
-
----
-
-🧪 Quick Sanity Check
-
-After committing, open the repo and view script.js. The last line should be:
-
-```javascript
-}
-```
-
-…and just above it, you should see:
-
+ 
 ```javascript
   renderFields();
   }
