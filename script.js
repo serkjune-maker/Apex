@@ -316,3 +316,173 @@ function toggleBookmark(id) {
 function isBookmarked(id) {
   return getBookmarks().includes(id);
     }
+Perfect — this is the correct, clean data section. But you're still missing the second half that actually renders the cards on the page. That's why nothing shows yet.
+
+📌 What You Have vs. What You Need
+
+You pasted: ✅ Part 1 — the fields array + theme toggle + bookmarks
+You're missing: ❌ Part 2 — the rendering code that draws the cards
+
+Without Part 2, the page loads but renders nothing. The JavaScript runs the data setup, then stops — because nothing is telling it to display the cards.
+
+---
+
+✅ What to Do — Add Part 2 to the Bottom
+
+Scroll to the very bottom of your script.js file (right after the isBookmarked function), then paste this at the end:
+
+```javascript
+
+// ═══════════════════════════════════════════
+//           HOMEPAGE RENDER (only on index.html)
+// ═══════════════════════════════════════════
+if (document.getElementById('fieldList')) {
+  const fieldList = document.getElementById('fieldList');
+  const searchBar = document.getElementById('searchBar');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const randomBtn = document.getElementById('randomBtn');
+  const toTop = document.getElementById('toTop');
+
+  let currentCategory = 'all';
+  let currentSearch = '';
+
+  function renderFields() {
+    const filtered = fields.filter(field => {
+      let matchesCategory;
+      if (currentCategory === 'bookmarked') matchesCategory = isBookmarked(field.id);
+      else matchesCategory = currentCategory === 'all' || field.category === currentCategory;
+
+      const matchesSearch =
+        field.title.toLowerCase().includes(currentSearch) ||
+        field.description.toLowerCase().includes(currentSearch) ||
+        field.topics.some(t => t.toLowerCase().includes(currentSearch));
+
+      return matchesCategory && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+      fieldList.innerHTML = '<div class="no-results">No fields found. Try a different search.</div>';
+      return;
+    }
+
+    fieldList.innerHTML = filtered.map(field => `
+      <div class="field-card">
+        <button class="bookmark-btn ${isBookmarked(field.id) ? 'saved' : ''}" data-id="${field.id}" title="Bookmark">${isBookmarked(field.id) ? '⭐' : '☆'}</button>
+        <span class="icon">${field.icon}</span>
+        <span class="category">${field.category}</span>
+        <h2><a href="field.html?id=${field.id}" style="color:inherit;text-decoration:none;">${field.title}</a></h2>
+        <p class="description">${field.description}</p>
+        <ul class="topics">
+          ${field.topics.map(t => `<li data-topic="${t}">${t}</li>`).join('')}
+        </ul>
+        <a href="field.html?id=${field.id}" class="view-detail-btn">View details →</a>
+      </div>
+    `).join('');
+
+    fieldList.querySelectorAll('.bookmark-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleBookmark(btn.dataset.id);
+        renderFields();
+      });
+    });
+
+    fieldList.querySelectorAll('.topics li').forEach(tag => {
+      tag.addEventListener('click', () => {
+        searchBar.value = tag.dataset.topic;
+        currentSearch = tag.dataset.topic.toLowerCase();
+        renderFields();
+      });
+    });
+  }
+
+  searchBar.addEventListener('input', (e) => {
+    currentSearch = e.target.value.toLowerCase();
+    renderFields();
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.dataset.category;
+      renderFields();
+    });
+  });
+
+  if (randomBtn) {
+    randomBtn.addEventListener('click', () => {
+      const random = fields[Math.floor(Math.random() * fields.length)];
+      window.location.href = `field.html?id=${random.id}`;
+    });
+  }
+
+  if (toTop) {
+    window.addEventListener('scroll', () => {
+      toTop.classList.toggle('show', window.scrollY > 400);
+    });
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+
+  renderFields();
+}
+```
+
+---
+
+🎯 Where Exactly to Paste It
+
+Your file should end like this before the paste:
+
+```javascript
+function isBookmarked(id) {
+  return getBookmarks().includes(id);
+}
+                                                    ← cursor here, end of file
+```
+
+After the paste, it should end like this:
+
+```javascript
+function isBookmarked(id) {
+  return getBookmarks().includes(id);
+}
+
+// ═══════════════════════════════════════════
+//           HOMEPAGE RENDER (only on index.html)
+// ═══════════════════════════════════════════
+if (document.getElementById('fieldList')) {
+  ...
+  renderFields();
+}                                                   ← new end of file
+```
+
+---
+
+📋 Full Step-by-Step
+
+1. Open script.js in your Apex repo (pencil ✏️)
+2. Scroll to the very bottom
+3. Place your cursor after }
+4. Press Enter twice
+5. Paste the block above
+6. Scroll down → Commit changes
+7. Wait 1 minute → refresh serkjune-maker.github.io/Apex
+
+Your cards will appear! ✅
+
+---
+
+🧪 Quick Sanity Check
+
+After committing, open the repo and view script.js. The last line should be:
+
+```javascript
+}
+```
+
+…and just above it, you should see:
+
+```javascript
+  renderFields();
+  }
