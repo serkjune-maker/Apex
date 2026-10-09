@@ -1,4 +1,4 @@
-const fields = [
+justconst fields = [
   // ─── TECHNOLOGY ───
   {
     title: "Artificial Intelligence",
@@ -532,3 +532,44 @@ function toggleBookmark(id) {
 function isBookmarked(id) {
   return getBookmarks().includes(id);
   }
+// ═══════════════════════════════════════════
+//           FIELD DETAIL PAGE
+// ═══════════════════════════════════════════
+if (document.getElementById('fieldDetail')) {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const field = fields.find(f => f.id === id);
+  const container = document.getElementById('fieldDetail');
+  const titleEl = document.getElementById('fieldTitle');
+
+  if (!field) {
+    titleEl.textContent = "Field not found";
+    container.innerHTML = '<p>Sorry, that field doesn\'t exist. <a href="index.html" style="color:var(--accent)">Go back home</a>.</p>';
+  } else {
+    document.title = field.title + " — Tech & Science Hub";
+    titleEl.innerHTML = `${field.icon} ${field.title}`;
+
+    container.innerHTML = `
+      <span class="category">${field.category}</span>
+      <p class="lead">${field.description}</p>
+
+      <h2>📖 Overview</h2>
+      <p>${field.details}</p>
+
+      <h2>🔑 Key Topics</h2>
+      <ul class="topics">
+        ${field.topics.map(t => `<li>${t}</li>`).join('')}
+      </ul>
+
+      <h2>💼 Career Paths</h2>
+      <ul>
+        ${field.careers.map(c => `<li>${c}</li>`).join('')}
+      </ul>
+
+      <h2>📚 Learning Resources</h2>
+      <div>
+        ${field.resources.map(r => `<a class="resource-link" href="${r.url}" target="_blank" rel="noopener">🔗 ${r.name}</a>`).join('')}
+      </div>
+    `;
+  }
+}
